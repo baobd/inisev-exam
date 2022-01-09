@@ -45,8 +45,13 @@ class Post extends Model
         return $this->belongsTo(Website::class);
     }
 
-    public function user(): BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function hasSubscriber(User $user): bool
+    {
+        return (bool) optional($this->users)->contains($user);
     }
 }
