@@ -3,83 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Website;
+use App\Traits\ApiResponser;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class WebsiteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    use ApiResponser;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function subscribe(Request $request): JsonResponse
     {
-        //
-    }
+        $customAttributes = ['user_id' => 'User', 'website_id' => 'Website', ];
+        $validator = Validator::make($request->all(), [
+            'website_id' => 'required|integer',
+            'user_id' => 'required|integer',
+        ], [], $customAttributes);
+        if ($validator->fails()) {
+            $msg = "Data submit error";
+            return $this->error(200, $msg, "Error ", $validator->errors()->toArray(), 4220);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Website  $website
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Website $website)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Website  $website
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Website $website)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Website  $website
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Website $website)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Website  $website
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Website $website)
-    {
-        //
+        $website = Website::find($request['website_id']);
+        if ($website instanceof Website) {
+            $website->users()->syncWithoutDetaching([request('user_id')]);
+            $website->save();
+            return $this->simpleSuccess('Subscribe successful', "SUCCESS", 'SUBSCRIBE', 200, 2000);
+        }
+        return $this->simpleError(200, 'Website not found', "Error", 4040);
     }
 }

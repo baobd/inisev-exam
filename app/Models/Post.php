@@ -6,6 +6,8 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -30,8 +32,21 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Post whereTitle($value)
  * @method static Builder|Post whereUpdatedAt($value)
  * @method static Builder|Post whereWebsiteId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $user
+ * @property-read int|null $user_count
+ * @property-read \App\Models\Website $website
  */
 class Post extends Model
 {
     use HasFactory;
+
+    public function website(): BelongsTo
+    {
+        return $this->belongsTo(Website::class);
+    }
+
+    public function user(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
+    }
 }
