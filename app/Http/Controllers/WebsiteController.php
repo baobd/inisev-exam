@@ -27,7 +27,6 @@ class WebsiteController extends Controller
         $website = Website::find($request['website_id']);
         if ($website instanceof Website) {
             $website->users()->syncWithoutDetaching([request('user_id')]);
-            $website->save();
             return $this->simpleSuccess('Subscribe successful', "SUCCESS", 'SUBSCRIBE', 200, 2000);
         }
         return $this->simpleError(200, 'Website not found', "Error", 4040);
