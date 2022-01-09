@@ -46,6 +46,7 @@ class SendSubscribeEmail implements ShouldQueue
                     if (! $this->myPost->hasSubscriber($subscriber)) {
                         sleep(60); // delay for sending over gmail
                         Mail::to($subscriber->email)->send($email);
+                        $this->myPost->users()->syncWithoutDetaching([$subscriber->id]); // I forgot to type this line, sorry
                     }
                 }
             }
