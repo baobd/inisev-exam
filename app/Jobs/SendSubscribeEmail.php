@@ -43,7 +43,7 @@ class SendSubscribeEmail implements ShouldQueue
             $subscribers = $website->users();
             foreach ($subscribers as $subscriber) {
                 if ($subscriber instanceof User) {
-                    if ($this->myPost->hasSubscriber($subscriber)) {
+                    if (! $this->myPost->hasSubscriber($subscriber)) {
                         sleep(60); // delay for sending over gmail
                         Mail::to($subscriber->email)->send($email);
                     }
